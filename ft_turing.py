@@ -24,15 +24,16 @@ def parse_arguments():
     parser.add_argument("input", help="input of the machine")
     return (parser.parse_args())
 
+def get_pair_from_input(i: int, machine: TuringMachine)-> tuple:
+    char = input[i]
+    if char not in machine.alphabet:
+        raise ValueError(f"Character '{char}' must be in 'alphabet'")
+    if char == machine.blank:
+        raise ValueError(f"Character '{char}' is 'blank' and must not be in input")
+    return (i, char)
+
 def create_tape(input: str, machine: TuringMachine) -> dict:
-    def check_input_char(i):
-        char = input[i]
-        if char not in machine.alphabet:
-            raise ValueError(f"Character '{char}' must be in 'alphabet'")
-        if char == machine.blank:
-            raise ValueError(f"Character '{char}' is 'blank' and must not be in input")
-        return (i, char)
-    return dict(map(check_input_char, range(len(input))))
+    return dict(map(lambda i : get_pair_from_input(i, machine), range(len(input))))
 
 if __name__ == "__main__":
     try:

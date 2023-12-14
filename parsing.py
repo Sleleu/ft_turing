@@ -1,20 +1,35 @@
 import json
 from classes import TuringMachine
 
-def rec_check_type(iterable)-> None:
-    """
-    Recursively checks if all elements in an iterable are str.
-    """
-    if not iterable: return
-    if not isinstance(iterable[0], str):
-        raise TypeError("Values need to be a string type")
-    rec_check_type(iterable[1:])
+# other syntax idk what to choose
+# def rec_is_duplicate(iterable: tuple)-> bool:
+#     if not iterable: return False
+#     return iterable[0] in iterable[1:] or rec_is_duplicate(iterable[1:])
+
+def rec_is_duplicate(iterable: tuple)-> bool:
+    match iterable :
+        case []:
+            return False
+        case [hd, *tl]:
+            return hd in tl or rec_is_duplicate(tl)
+
+def rec_is_not_str(iterable)-> bool:
+    match iterable :
+        case []:
+            return False
+        case [hd, *tl]:
+            if not isinstance(hd, str):
+                return True
+            return rec_is_not_str(tl)
 
 def check_alphabet(alphabet: tuple, blank: str)-> tuple:
     """
     Checks if an alphabet is valid and contains the 'blank' character.
     """
-    rec_check_type(alphabet)
+    if rec_is_not_str(alphabet):
+        raise TypeError("Values need to be a string type")
+    if rec_is_duplicate(alphabet):
+        raise ValueError("'alphabet' contain duplicates")
     if not all(map(lambda x: len(x) == 1 , alphabet)):
         raise ValueError("Each character of the alphabet must be a string of length strictly equal to 1")
     if blank not in alphabet:
@@ -24,8 +39,8 @@ def check_states(states: tuple, initial: str, finals: tuple)-> tuple:
     """
     Checks if states are valid, including the initial state and final states.
     """
-    rec_check_type(states)
-    rec_check_type(finals)
+    if rec_is_not_str(states) or rec_is_not_str(finals):
+        raise TypeError("Values need to be a string type")
 
     def rec_in_states(value, states)-> bool:
         """
