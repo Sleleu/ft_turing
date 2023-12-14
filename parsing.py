@@ -42,10 +42,6 @@ def check_states(states: tuple, initial: str, finals: tuple)-> tuple:
         Recursively checks if each final state is in the tuple 'states'.
         
         This function is typically used to verify that all final states of a Turing machine are valid.
-
-        :param finals: A list (or tuple) of final states to be checked.
-        :param states: A list (or tuple) of all states for comparison.
-        :raises ValueError: If any final state is not found in the list of all states.
         """
         if not finals:
             return

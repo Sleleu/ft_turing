@@ -21,15 +21,30 @@ def parse_arguments():
     parser = argparse.ArgumentParser()
     parser.usage = "ft_turing [-h] jsonfile input"
     parser.add_argument("jsonfile", help="json description of the machine")
+    parser.add_argument("input", help="input of the machine")
     return (parser.parse_args())
+
+def create_tape(input: str, machine: TuringMachine) -> dict:
+    def check_input_char(i):
+        char = input[i]
+        if char not in machine.alphabet:
+            raise ValueError(f"Character '{char}' must be in 'alphabet'")
+        if char == machine.blank:
+            raise ValueError(f"Character '{char}' is 'blank' and must not be in input")
+        return (i, char)
+    return dict(map(check_input_char, range(len(input))))
 
 if __name__ == "__main__":
     try:
         args = parse_arguments()
         jsonfile : str = args.jsonfile
+        input : str = args.input
         data = load_json(jsonfile)
         machine : TuringMachine = create_machine(data)
+        tape : dict = create_tape(input, machine)
         print_banner()
         print_machine_attributes(machine)
+        print(tape)
+        # rec_run_machine(machine, tape)
     except (ValueError, KeyError, TypeError) as error:
         print(f"{__name__}: {type(error).__name__}: {error}")
