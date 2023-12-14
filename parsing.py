@@ -13,7 +13,6 @@ def check_alphabet(alphabet: tuple[str], blank: str) -> tuple[str]:
         raise ValueError("Each character of the alphabet must be a string of length strictly equal to 1")
     if blank not in alphabet:
         raise ValueError("'blank' not in 'alphabet'")
-    return alphabet
 
 def check_states(states: tuple[str], initial: str, finals: tuple[str]) -> tuple[str]:
     rec_check_type(states)
@@ -33,37 +32,43 @@ def check_states(states: tuple[str], initial: str, finals: tuple[str]) -> tuple[
         rec_check_finals_in_states(finals[1:])
 
     rec_check_finals_in_states(finals)
-    return states
 
-# changer transition en fonctionnel 
-# + séparer les check et assignation des variables en plus 
-# de fonctions découpées
-# peut-être faire les duplicats
+def rec_check_t_lines(t:tuple[dict[str, str]], alphabet, states)-> None:
+    if not t: return
+    if t[0]["read"] not in alphabet or t[0]["write"] not in alphabet:
+        raise ValueError("'read' and 'write' values must be in 'alphabet'")
+    if t[0]["to_state"] not in states:
+        raise ValueError("'to_state' must be in 'states'")
+    if t[0]["action"] not in {"LEFT", "RIGHT"}:
+        raise ValueError("'action' must be 'LEFT' or 'RIGHT'")
+    rec_check_t_lines(t[1:], alphabet, states)
 
-def check_transitions(transitions: dict, alphabet: list[str], states: list[str])-> dict:
-    for state, trans_list in transitions.items():
-        if state not in states:
-            raise ValueError(f"Transition '{state}' is not in the states list")
-        for trans in trans_list:
-            if trans["read"] not in alphabet or trans["write"] not in alphabet:
-                raise ValueError("'read' and 'write' values must be in 'alphabet'")
-            if trans["to_state"] not in states:
-                raise ValueError("'to_state' must be in 'states'")
-            if trans["action"] not in {"LEFT", "RIGHT"}:
-                raise ValueError("'action' must be 'LEFT' or 'RIGHT'")
-    return transitions
+def rec_check_transitions(state_keys, transitions, alphabet: tuple[str], states: tuple[str])-> dict:
+    if not state_keys: return
+    key = state_keys[0]
+    if key not in states:
+        raise ValueError(f"Transition '{key}' not in states list")
+    trans_tuple = transitions[key]
+    rec_check_t_lines(trans_tuple, alphabet, states)
+    rec_check_transitions(state_keys[1:], transitions, alphabet, states)
+
+def check_transitions(transitions: dict[str, tuple[dict[str, str]]], alphabet: tuple[str], states: tuple[str]):
+    state_keys = tuple(transitions.keys())
+    rec_check_transitions(state_keys, transitions, alphabet, states)
+
+def parse_data(data: json):
+    check_alphabet((data["alphabet"]), data["blank"])
+    check_states((data["states"]), data["initial"], (data["finals"]))
+    check_transitions((data["transitions"]), data["alphabet"], data["states"])
 
 def create_machine(data: json) -> TuringMachine:
-    alphabet = check_alphabet(tuple[str](data["alphabet"]), data["blank"])
-    states = check_states(tuple[str](data["states"]), data["initial"], tuple[str](data["finals"]))
-    transitions = check_transitions(dict[str, tuple[str]](data["transitions"]), alphabet, states)
-
+    parse_data(data)
     return TuringMachine(
         name=data["name"],
-        alphabet=alphabet,
+        alphabet=tuple(data["alphabet"]),
         blank=data["blank"],
-        states=states,
+        states=tuple(data["states"]),
         initial=data["initial"],
-        finals=data["finals"],
-        transitions=transitions
+        finals=tuple(data["finals"]),
+        transitions=data["transitions"]
     )
