@@ -6,7 +6,7 @@
 #    By: sleleu <sleleu@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2023/12/13 18:00:36 by sleleu            #+#    #+#              #
-#    Updated: 2023/12/13 18:43:15 by sleleu           ###   ########.fr        #
+#    Updated: 2023/12/14 01:01:03 by sleleu           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -34,5 +34,5 @@ def print_machine_attributes(machine: TuringMachine)-> None:
     print(f"Alphabet: {machine.alphabet}")
     print(f"Blank: '{machine.blank}'")
     print(f"States: {machine.states}")
-    print(f"Initial: {machine.initial}")
+    print(f"Initial: '{machine.initial}'")
     print(f"Finals: {machine.finals}")
