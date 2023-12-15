@@ -8,7 +8,7 @@
     
     "transitions" : {
         "scanright": [
-            { "read" : "1", "to_state": "scanright", "write": ".", "action": "RIGHT"},
+            { "read" : ".", "to_state": "scanright", "write": ".", "action": "RIGHT"},
             { "read" : "1", "to_state": "scanright", "write": "1", "action": "RIGHT"},
             { "read" : "-", "to_state": "scanright", "write": "-", "action": "RIGHT"},
             { "read" : "=", "to_state": "eraseone" , "write": ".", "action": "LEFT" }
