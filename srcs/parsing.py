@@ -1,10 +1,25 @@
 import json
-from classes import TuringMachine
+import argparse
+from srcs.classes import TuringMachine
 
-# other syntax idk what to choose
-# def rec_is_duplicate(iterable: tuple)-> bool:
-#     if not iterable: return False
-#     return iterable[0] in iterable[1:] or rec_is_duplicate(iterable[1:])
+def load_json(path: str) -> json:
+    HANDLED_ERRORS = (FileNotFoundError, PermissionError,
+                      ValueError, IsADirectoryError)
+    try:
+        with open(path, "r") as file:
+            data = json.load(file)
+        return data
+    except HANDLED_ERRORS as error:
+        print(f"{__name__}: {type(error).__name__}: {error}")
+        return None
+
+def parse_arguments():
+    parser = argparse.ArgumentParser()
+    parser.usage = "ft_turing [-h] jsonfile input"
+    parser.add_argument("jsonfile", help="json description of the machine")
+    parser.add_argument("input", help="input of the machine")
+    return (parser.parse_args())
+
 
 def rec_is_duplicate(iterable: tuple)-> bool:
     match iterable :
@@ -131,3 +146,13 @@ def create_machine(data: json) -> TuringMachine:
         finals=tuple(data["finals"]),
         transitions=data["transitions"]
     )
+
+def create_tape(input: str, machine: TuringMachine) -> dict:
+    def check_input_char(i):
+        char = input[i]
+        if char not in machine.alphabet:
+            raise ValueError(f"Character '{char}' must be in 'alphabet'")
+        if char == machine.blank:
+            raise ValueError(f"Character '{char}' is 'blank' and must not be in input")
+        return (i, char)
+    return dict(map(check_input_char, range(len(input))))
