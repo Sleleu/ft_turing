@@ -11,17 +11,12 @@ def rec_extract_action(read_char, transition: dict):
             return transition[0] if read_char in transition[0]["read"] else rec_extract_action(read_char, transition[1:]) 
 
 def write_char_in_tape(tape_keys: tuple, tape: dict, head: int, write_char: str)-> dict:
-    @tail_recursive
-    def construct_tape(keys):
-        match keys:
-            case []: return {}
-            case [hd, *tl]:
-                value = write_char if hd == head else tape.get(hd, '.')
-                return {hd: value} | construct_tape.tail_call(tl)
-    return construct_tape(tape_keys)
+    return (dict(map(lambda key: (key, write_char if key == head else tape.get(key, '.')), tape_keys)))
 
 def refresh_head(head: int, action_str: str)-> int:
-    return head + 1 if action_str == "RIGHT" else head - 1
+    match action_str:
+        case "RIGHT": return head + 1
+        case "LEFT": return head - 1
 
 def refresh_tape_keys(tape, head)-> tuple:
     return tuple(tape.keys()) if head in tuple(tape.keys()) else tuple(tape.keys()) + (head,)
