@@ -41,6 +41,8 @@ def check_states(states: tuple, initial: str, finals: tuple)-> tuple:
     """
     if rec_is_not_str(states) or rec_is_not_str(finals):
         raise TypeError("Values need to be a string type")
+    if rec_is_duplicate(states) or rec_is_duplicate(finals):
+        raise ValueError("'states' or 'finals' contain duplicates")
 
     def rec_in_states(value, states)-> bool:
         """
@@ -94,6 +96,8 @@ def rec_check_transitions(state_keys: tuple, transitions, alphabet: tuple, state
     if key not in states:
         raise ValueError(f"Transition '{key}' not in states list")
     trans_tuple = tuple(transitions[key])
+    if rec_is_duplicate(tuple(map(lambda i: trans_tuple[i]["read"], range(len(trans_tuple))))):
+        raise ValueError(f"state '{key}' contain duplicates")
     rec_check_t_lines(trans_tuple, alphabet, states)
     rec_check_transitions(state_keys[1:], transitions, alphabet, states)
 

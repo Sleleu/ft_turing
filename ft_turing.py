@@ -56,8 +56,8 @@ def rec_process_read_write(machine, tape, head: int, state: str):
     read_char: str = read_char_in_tape(tape, head, machine.blank)
     action: dict = rec_extract_action(read_char, machine.transitions[state])
     new_state = action["to_state"]
-    new_tape = write_char_in_tape()
-    print(new_tape)
+    # new_tape = write_char_in_tape()
+    # print(new_tape)
     # new_head = head + 1 if action["action"] is "RIGHT" else head - 1
     # rec_process_read_write(machine, new_tape, new_head, new_state)
 
