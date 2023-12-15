@@ -1,4 +1,5 @@
 from srcs.classes import TuringMachine
+from tail_recursive import tail_recursive
 
 def read_char_in_tape(tape, head, blank):
     return tape[head] if head in tape else blank
@@ -22,11 +23,14 @@ def refresh_head(head: int, action_str: str)-> int:
     return head + 1 if action_str == "RIGHT" else head - 1
 
 def refresh_tape_keys(tape, head)-> tuple:
-    return tuple(tape.keys()) if head in tuple(tape.keys()) else tuple(tape.keys()) + (head,)
+    if head in tuple(tape.keys()):
+        return tuple(tape.keys())
+    else: return tuple(tape.keys()) + (head,) if head > 0 else (head,) + tuple(tape.keys())
 
 def print_tape(tape, head):
     return "".join((map(lambda i: tape[i] if head != i else '<' + tape[i] + '>', range(len(tape))))).ljust(20, '.')
 
+@tail_recursive
 def rec_process(machine, tape, head: int, state: str):
     def display_actual_stat():
         func = print_tape(tape, head)
@@ -38,7 +42,7 @@ def rec_process(machine, tape, head: int, state: str):
     new_tape: dict = write_char_in_tape(tape_keys, tape, head, action["write"])
     new_head = refresh_head(head, action["action"])
     display_actual_stat()
-    return rec_process(machine, new_tape, new_head, new_state) if new_state not in machine.finals else exit()
+    return rec_process.tail_call(machine, new_tape, new_head, new_state) if new_state not in machine.finals else exit()
 
 def run_machine(machine : TuringMachine, tape: dict):
     head: int = 0
