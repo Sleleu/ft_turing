@@ -24,3 +24,4 @@ def print_machine_attributes(machine: TuringMachine)-> None:
     print(f"States: {machine.states}")
     print(f"Initial: '{machine.initial}'")
     print(f"Finals: {machine.finals}")
+    print(f"{''.ljust(75, '*')}")

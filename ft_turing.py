@@ -55,10 +55,13 @@ def write_char_in_tape(tape_keys, tape, head, write_char):
     new_tape = dict(map(return_pair, range(len(tape_keys))))
     return new_tape
 
+def print_tape(tape, head):
+    return "".join((map(lambda i: tape[i] if head != i else '<' + tape[i] + '>', range(len(tape))))).ljust(20, '.')
+
 def rec_process(machine, tape, head: int, state: str):
     def display_actual_stat():
-        # func = display_tape(tape, head)
-        print(f'[...] ({state}, {read_char}) -> ({new_state}, {action["write"]}, {action["action"]})')
+        func = print_tape(tape, head)
+        print(f'[{func}] ({state}, {read_char}) -> ({new_state}, {action["write"]}, {action["action"]})')
     if state in machine.finals:
         return exec_final_state(machine, tape, state)
     read_char: str = read_char_in_tape(tape, head, machine.blank)
@@ -85,9 +88,8 @@ if __name__ == "__main__":
         tape : dict = create_tape(input, machine)
         print_banner()
         print_machine_attributes(machine)
-        print(tape)
         run_machine(machine, tape)
     except (ValueError, KeyError, TypeError) as error:
         print(f"{__name__}: {type(error).__name__}: {error}")
     except RecursionError as error:
-        print(f"{type(error).__name__}: The machine cannot find a solution")
+        print(f"The machine cannot find a solution")
