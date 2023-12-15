@@ -46,25 +46,34 @@ def rec_extract_action(read_char, transition: dict):
         case _ :
             return transition[0] if read_char in transition[0]["read"] else rec_extract_action(read_char, transition[1:]) 
 
-def write_char_in_tape(tape, head, read_char):
-    return dict()
+def write_char_in_tape(tape_keys, tape, head, write_char):
+    def return_pair(i):
+        if head != i:
+            return (i, tape[i])
+        else:
+            return (i, write_char)
+    new_tape = dict(map(return_pair, range(len(tape_keys))))
+    return new_tape
 
-def rec_process_read_write(machine, tape, head: int, state: str):
-    # display_actual_state()
+def rec_process(machine, tape, head: int, state: str):
+    def display_actual_stat():
+        # func = display_tape(tape, head)
+        print(f'[...] ({state}, {read_char}) -> ({new_state}, {action["write"]}, {action["action"]})')
     if state in machine.finals:
         return exec_final_state(machine, tape, state)
     read_char: str = read_char_in_tape(tape, head, machine.blank)
     action: dict = rec_extract_action(read_char, machine.transitions[state])
-    new_state = action["to_state"]
-    # new_tape = write_char_in_tape()
-    # print(new_tape)
-    # new_head = head + 1 if action["action"] is "RIGHT" else head - 1
-    # rec_process_read_write(machine, new_tape, new_head, new_state)
+    new_state: str = action["to_state"]
+    tape_keys = tuple(tape.keys()) if head in tuple(tape.keys()) else tuple(tape.keys()) + (head,)
+    new_tape: dict = write_char_in_tape(tape_keys, tape, head, action["write"])
+    new_head = head + 1 if action["action"] == "RIGHT" else head - 1
+    display_actual_stat()
+    return rec_process(machine, new_tape, new_head, new_state) if new_state not in machine.finals else exit()
 
 def run_machine(machine : TuringMachine, tape: dict):
     head: int = 0
     state: str = machine.initial
-    rec_process_read_write(machine, tape, head, state)
+    rec_process(machine, tape, head, state)
 
 if __name__ == "__main__":
     try:
@@ -80,3 +89,5 @@ if __name__ == "__main__":
         run_machine(machine, tape)
     except (ValueError, KeyError, TypeError) as error:
         print(f"{__name__}: {type(error).__name__}: {error}")
+    except RecursionError as error:
+        print(f"{type(error).__name__}: The machine cannot find a solution")
