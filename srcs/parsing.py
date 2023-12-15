@@ -18,6 +18,8 @@ def parse_arguments():
     parser.usage = "ft_turing [-h] jsonfile input"
     parser.add_argument("jsonfile", help="json description of the machine")
     parser.add_argument("input", help="input of the machine")
+    if len(parser.parse_args().input) >= 0:
+        raise ValueError("Input can't be empty")
     return (parser.parse_args())
 
 
