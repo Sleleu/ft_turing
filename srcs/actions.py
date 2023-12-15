@@ -18,6 +18,12 @@ def write_char_in_tape(tape_keys, tape, head, write_char):
     new_tape = dict(map(return_pair, range(len(tape_keys))))
     return new_tape
 
+def refresh_head(head: int, action_str: str)-> int:
+    return head + 1 if action_str == "RIGHT" else head - 1
+
+def refresh_tape_keys(tape, head)-> tuple:
+    return tuple(tape.keys()) if head in tuple(tape.keys()) else tuple(tape.keys()) + (head,)
+
 def print_tape(tape, head):
     return "".join((map(lambda i: tape[i] if head != i else '<' + tape[i] + '>', range(len(tape))))).ljust(20, '.')
 
@@ -28,9 +34,9 @@ def rec_process(machine, tape, head: int, state: str):
     read_char: str = read_char_in_tape(tape, head, machine.blank)
     action: dict = rec_extract_action(read_char, machine.transitions[state])
     new_state: str = action["to_state"]
-    tape_keys = tuple(tape.keys()) if head in tuple(tape.keys()) else tuple(tape.keys()) + (head,)
+    tape_keys = refresh_tape_keys(tape, head)
     new_tape: dict = write_char_in_tape(tape_keys, tape, head, action["write"])
-    new_head = head + 1 if action["action"] == "RIGHT" else head - 1
+    new_head = refresh_head(head, action["action"])
     display_actual_stat()
     return rec_process(machine, new_tape, new_head, new_state) if new_state not in machine.finals else exit()
 
