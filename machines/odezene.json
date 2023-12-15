@@ -1,0 +1,22 @@
+{
+    "name" : "odezene",
+    "alphabet": [ "0", ".", "y", "n" ],
+    "blank" : ".",
+    "states" : [ "odd", "even", "finish", "HALT" ],
+    "initial" : "odd",
+    "finals" : [ "HALT" ],
+    
+    "transitions" : {
+        "odd": [
+            { "read" : "0", "to_state": "even", "write": "0", "action": "RIGHT"},
+            { "read" : ".", "to_state": "finish" , "write": "y", "action": "RIGHT" }
+        ],
+        "even": [
+            { "read" : "0", "to_state": "odd", "write": "0", "action": "RIGHT"},
+            { "read" : ".", "to_state": "finish" , "write": "n", "action": "RIGHT" }
+        ],
+        "finish": [
+            { "read" : ".", "to_state": "HALT", "write": ".", "action": "RIGHT"}
+        ]
+    }
+}
