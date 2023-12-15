@@ -10,25 +10,28 @@ def rec_extract_action(read_char, transition: dict):
         case _ :
             return transition[0] if read_char in transition[0]["read"] else rec_extract_action(read_char, transition[1:]) 
 
-def write_char_in_tape(tape_keys, tape, head, write_char):
-    def return_pair(i):
-        if head != i:
-            return (i, tape[i])
-        else:
-            return (i, write_char)
-    new_tape: dict = dict(map(return_pair, range(len(tape_keys))))
-    return new_tape
+def write_char_in_tape(tape_keys: tuple, tape: dict, head: int, write_char: str)-> dict:
+    @tail_recursive
+    def construct_tape(keys):
+        match keys:
+            case []: return {}
+            case [hd, *tl]:
+                value = write_char if hd == head else tape.get(hd, '.')
+                return {hd: value} | construct_tape.tail_call(tl)
+    return construct_tape(tape_keys)
 
 def refresh_head(head: int, action_str: str)-> int:
     return head + 1 if action_str == "RIGHT" else head - 1
 
 def refresh_tape_keys(tape, head)-> tuple:
-    if head in tuple(tape.keys()):
-        return tuple(tape.keys())
-    else: return tuple(tape.keys()) + (head,) if head > 0 else (head,) + tuple(tape.keys())
+    return tuple(tape.keys()) if head in tuple(tape.keys()) else tuple(tape.keys()) + (head,)
 
 def print_tape(tape, head):
-    return "".join((map(lambda i: tape[i] if head != i else '<' + tape[i] + '>', range(len(tape))))).ljust(20, '.')
+    def generate_keys():
+        minimum = min(tape) if min(tape) < head else head
+        maximum = max(tape) if max(tape) > head else head
+        return range(minimum, maximum + 1)
+    return "".join(map(lambda i: tape.get(i, '.') if i != head else '<' + tape.get(i, '.') + '>', generate_keys()))
 
 @tail_recursive
 def rec_process(machine, tape, head: int, state: str):
