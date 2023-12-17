@@ -28,7 +28,8 @@
         "Q1": [
             { "read" : "0", "to_state": "Q1" , "write": "0", "action": "RIGHT"},
             { "read" : "1", "to_state": "Q2" , "write": "_", "action": "LEFT"},
-            { "read" : "_", "to_state": "Q1" , "write": "_", "action": "RIGHT"}
+            { "read" : "_", "to_state": "Q1" , "write": "_", "action": "RIGHT"},
+            { "read" : ".", "to_state": "finish" , "write": "n", "action": "RIGHT"}
         ],
         "Q2": [
             { "read" : "0", "to_state": "Q2" , "write": "0", "action": "LEFT"},
