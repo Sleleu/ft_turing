@@ -1,10 +1,10 @@
 from srcs.classes import TuringMachine, Tape
-from srcs.display import print_tape
+from srcs.display import print_stat
 from tail_recursive import tail_recursive
 from types import MappingProxyType as mpt
 
-def read_char_in_tape(tape: mpt, head: int, blank: str):
-    return tape[head] if head in tape else blank
+def get_char(tape: mpt, head: int, blank: str):
+    return tape.get(head, blank)
 
 def rec_extract_action(read_char: str, transition: mpt)-> mpt:
     match transition:
@@ -12,32 +12,23 @@ def rec_extract_action(read_char: str, transition: mpt)-> mpt:
         case _ :
             return transition[0] if read_char in transition[0]["read"] else rec_extract_action(read_char, transition[1:]) 
 
-def write_char_in_tape(tape_keys: tuple, tape: mpt, head: int, write_char: str)-> mpt:
-    return (mpt(dict(map(lambda key: (key, write_char if key == head else tape.get(key, '.')), tape_keys))))
+def write_char_in_tape(tape: mpt, head: int, write_char: str)-> mpt:
+    return mpt({**tape, head: write_char})
 
 def refresh_head(head: int, action_str: str)-> int:
-    match action_str:
-        case "RIGHT": return head + 1
-        case "LEFT": return head - 1
-
-def refresh_tape_keys(keys: tuple, head: int)-> tuple:
-    return keys if head in keys else keys + (head,)
+    return head + 1 if action_str == "RIGHT" else head - 1
 
 def get_new_values(machine: TuringMachine, tape: mpt, head: int, state: str)-> Tape:
-    read_char = read_char_in_tape(tape, head, machine.blank)
-    action = rec_extract_action(read_char, machine.transitions[state])
-    new_state = action["to_state"]
-    tape_keys = refresh_tape_keys(tuple(tape.keys()), head)
-    new_tape = write_char_in_tape(tape_keys, tape, head, action["write"])
-    new_head = refresh_head(head, action["action"])
-    return Tape(read_char=read_char, tape=new_tape, tape_keys=tape_keys,
-                head=new_head, state=new_state, action=action)
+    def get_action():
+        return rec_extract_action(get_char(tape, head, machine.blank), machine.transitions[state])
+    return Tape(read_char = get_char(tape, head, machine.blank),
+                tape = write_char_in_tape(tape, head, get_action()["write"]),
+                head = refresh_head(head, get_action()["action"]),
+                state = get_action()["to_state"],
+                action = get_action())
 
 @tail_recursive
 def rec_process(machine: TuringMachine, tape: mpt, head: int, state: str):
-    def display_actual_stat():
-        func = print_tape(tape, head)
-        print(f'[{func}] ({state}, {t.read_char}) -> ({t.state}, {t.action["write"]}, {t.action["action"]})')
     t = get_new_values(machine, tape, head, state)
-    display_actual_stat()
+    print_stat(tape, head, state, t)
     return rec_process.tail_call(machine, t.tape, t.head, t.state) if t.state not in machine.finals else exit()

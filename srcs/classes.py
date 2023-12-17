@@ -14,7 +14,6 @@ class TuringMachine:
 @dataclass(frozen=True)
 class Tape:
     tape : mpt
-    tape_keys : tuple[int]
     head : int
     state : str
     read_char : str

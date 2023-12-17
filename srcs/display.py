@@ -32,3 +32,6 @@ def print_tape(tape, head):
         maximum = max(tape) if max(tape) > head else head
         return range(minimum, maximum + 1)
     return "".join(map(lambda i: tape.get(i, '.') if i != head else '<' + tape.get(i, '.') + '>', generate_keys()))
+
+def print_stat(tape, head, state, t):
+    print(f'[{print_tape(tape, head)}] ({state}, {t.read_char}) -> ({t.state}, {t.action["write"]}, {t.action["action"]})')

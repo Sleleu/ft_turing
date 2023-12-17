@@ -1,39 +1,9 @@
 import json
-import argparse
 from srcs.classes import TuringMachine
 from types import MappingProxyType as mpt
 
-def load_json(path: str) -> json:
-    """
-    Try to load data from a json
-    """
-    HANDLED_ERRORS = (FileNotFoundError, PermissionError,
-                      ValueError, IsADirectoryError)
-    try:
-        with open(path, "r") as file:
-            data = json.load(file)
-        return data
-    except HANDLED_ERRORS as error:
-        print(f"{__name__}: {type(error).__name__}: {error}")
-        exit(1)
-
-def parse_arguments():
-    """
-    argparse function, check for jsonfile and input args
-    """
-    parser = argparse.ArgumentParser()
-    parser.usage = "ft_turing [-h] jsonfile input"
-    parser.add_argument("jsonfile", help="json description of the machine")
-    parser.add_argument("input", help="input of the machine")
-    if len(parser.parse_args().input) <= 0:
-        raise ValueError("Input can't be empty")
-    return (parser.parse_args())
-
-
 def rec_is_duplicate(iterable: tuple)-> bool:
-    """
-    Pattern matching to check if there is a duplicate in an iterable
-    """
+    """ Pattern matching to check if there is a duplicate in an iterable """
     match iterable :
         case []:
             return False
@@ -41,9 +11,7 @@ def rec_is_duplicate(iterable: tuple)-> bool:
             return hd in tl or rec_is_duplicate(tl)
 
 def rec_is_not_str(iterable)-> bool:
-    """
-    Pattern matching to check if all items in an iterable are string type
-    """
+    """ Pattern matching to check if all items in an iterable are string type """
     match iterable :
         case []:
             return False
@@ -53,9 +21,7 @@ def rec_is_not_str(iterable)-> bool:
             return rec_is_not_str(tl)
 
 def check_alphabet(alphabet: tuple, blank: str)-> tuple:
-    """
-    Checks if an alphabet is valid and contains the 'blank' character.
-    """
+    """ Checks if an alphabet is valid and contains the 'blank' character. """
     if rec_is_not_str(alphabet):
         raise TypeError("Values need to be a string type")
     if rec_is_duplicate(alphabet):
@@ -66,18 +32,14 @@ def check_alphabet(alphabet: tuple, blank: str)-> tuple:
         raise ValueError("'blank' not in 'alphabet'")
 
 def check_states(states: tuple, initial: str, finals: tuple)-> tuple:
-    """
-    Checks if states are valid, including the initial state and final states.
-    """
+    """ Checks if states are valid, including the initial state and final states. """
     if rec_is_not_str(states) or rec_is_not_str(finals):
         raise TypeError("Values need to be a string type")
     if rec_is_duplicate(states) or rec_is_duplicate(finals):
         raise ValueError("'states' or 'finals' contain duplicates")
 
     def rec_in_states(value, states)-> bool:
-        """
-        Recursively checks if a given value is present in a list of states.
-        """
+        """ Recursively checks if a given value is present in a list of states. """
         if not states: return False
         return value == states[0] or rec_in_states(value, states[1:])
     
@@ -85,11 +47,7 @@ def check_states(states: tuple, initial: str, finals: tuple)-> tuple:
         raise ValueError("'initial' not in 'states'")
     
     def rec_check_finals_in_states(finals)-> None:
-        """
-        Recursively checks if each final state is in the tuple 'states'.
-        
-        This function is typically used to verify that all final states of a Turing machine are valid.
-        """
+        """ Recursively checks if each final state is in the tuple 'states'. """
         if not finals:
             return
         if not rec_in_states(finals[0], states):
@@ -99,12 +57,7 @@ def check_states(states: tuple, initial: str, finals: tuple)-> tuple:
     rec_check_finals_in_states(finals)
 
 def rec_check_t_lines(t:tuple[mpt[str, str]], alphabet, states)-> None:
-    """
-    Recursively check if each key is present, and if each value is present :
-    - in 'states' for 'to_action' key
-    - in 'alphabet' for 'read' and 'write' key
-    - if 'action' contain only 'LEFT' or 'RIGHT'
-    """
+    """ Recursively check if each key is present, and if each value is present """
     if not t: return
     if t[0]["read"] not in alphabet or t[0]["write"] not in alphabet:
         raise ValueError("'read' and 'write' values must be in 'alphabet'")
@@ -140,17 +93,13 @@ def check_transitions(transitions: mpt[str, tuple[mpt[str, str]]], alphabet: tup
     rec_check_transitions(state_keys, transitions, alphabet, states)
 
 def parse_data(data: json):
-    """
-    Parse and validate JSON data for the TuringMachine
-    """
+    """ Parse and validate JSON data for the TuringMachine """
     check_alphabet((data["alphabet"]), data["blank"])
     check_states((data["states"]), data["initial"], (data["finals"]))
     check_transitions((data["transitions"]), data["alphabet"], data["states"])
 
 def create_machine(data: json) -> TuringMachine:
-    """
-    Creates an instance of the Turing Machine from validated JSON data.
-    """
+    """ Creates an instance of the Turing Machine from validated JSON data. """
     parse_data(data)
     return TuringMachine(
         name=data["name"],
@@ -163,17 +112,12 @@ def create_machine(data: json) -> TuringMachine:
     )
 
 def create_tape(input: str, machine: TuringMachine) -> mpt:
-    """
-    iter with map with the function check_input_char, return a dict
-    """
+    """ iter with map with the function check_input_char, return a dict """
     def check_input_char(i):
-        """
-        return a pair of key/values
-        """
-        char = input[i]
-        if char not in machine.alphabet:
-            raise ValueError(f"Character '{char}' must be in 'alphabet'")
-        if char == machine.blank:
-            raise ValueError(f"Character '{char}' is 'blank' and must not be in input")
-        return (i, char)
+        """ return a pair of key/values """
+        if input[i] not in machine.alphabet:
+            raise ValueError(f"Character '{input[i]}' must be in 'alphabet'")
+        if input[i] == machine.blank:
+            raise ValueError(f"Character '{input[i]}' is 'blank' and must not be in input")
+        return (i, input[i])
     return mpt(dict(map(check_input_char, range(len(input)))))
