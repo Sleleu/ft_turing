@@ -60,47 +60,37 @@ def rec_check_t_lines(t:tuple[mpt[str, str]], alphabet, states)-> None:
     """ Recursively check if each key is present, and if each value is present """
     if not t: return
     if t[0]["read"] not in alphabet or t[0]["write"] not in alphabet:
-        raise ValueError("'read' and 'write' values must be in 'alphabet'")
+        raise ValueError(f"'read' | 'write': '{t[0]['read']}' must be in 'alphabet'")
     if t[0]["to_state"] not in states:
-        raise ValueError("'to_state' must be in 'states'")
+        raise ValueError(f"'{t[0]['to_state']}' must be in 'states'")
     if t[0]["action"] not in {"LEFT", "RIGHT"}:
         raise ValueError("'action' must be 'LEFT' or 'RIGHT'")
     rec_check_t_lines(t[1:], alphabet, states)
 
-def rec_check_transitions(state_keys: tuple, transitions, alphabet: tuple, states: tuple)-> mpt:
+def rec_check_transitions(state_keys: tuple, transitions: mpt, alphabet: tuple, states: tuple)-> mpt:
     """
     Recursively checks all transitions for each state.
-    - check if each key is in the 'states' list
-    - create a tuple ({"read": '1', ...}, {...}, ...) to recursively iterate 
-      on all possibilities in a transition
+    - check if each key is in 'states' and duplicates of read
     """
+    def get_trans():
+        return transitions[state_keys[0]]
+ 
     if not state_keys: return
-    key = state_keys[0]
-    if key not in states:
-        raise ValueError(f"Transition '{key}' not in states list")
-    trans_tuple = tuple(transitions[key])
-    if rec_is_duplicate(tuple(map(lambda i: trans_tuple[i]["read"], range(len(trans_tuple))))):
-        raise ValueError(f"state '{key}' contain duplicates")
-    rec_check_t_lines(trans_tuple, alphabet, states)
+    if state_keys[0] not in states:
+        raise ValueError(f"Transition '{state_keys[0]}' not in states list")
+    if rec_is_duplicate(tuple(map(lambda i: get_trans()[i]["read"], range(len(get_trans()))))):
+        raise ValueError(f"state '{state_keys[0]}' contain duplicates")
+    rec_check_t_lines(get_trans(), alphabet, states)
     rec_check_transitions(state_keys[1:], transitions, alphabet, states)
-
-def check_transitions(transitions: mpt[str, tuple[mpt[str, str]]], alphabet: tuple, states: tuple):
-    """
-    Create a tuple of keys containing each transitions ("scanright", "eraseone", ...),
-    to recursively iterate on them
-    """
-    state_keys : tuple = tuple(transitions.keys())
-    rec_check_transitions(state_keys, transitions, alphabet, states)
 
 def parse_data(data: json):
     """ Parse and validate JSON data for the TuringMachine """
     check_alphabet((data["alphabet"]), data["blank"])
     check_states((data["states"]), data["initial"], (data["finals"]))
-    check_transitions((data["transitions"]), data["alphabet"], data["states"])
+    rec_check_transitions((tuple(data["transitions"].keys())), data["transitions"], data["alphabet"], data["states"])
 
 def create_machine(data: json) -> TuringMachine:
     """ Creates an instance of the Turing Machine from validated JSON data. """
-    parse_data(data)
     return TuringMachine(
         name=data["name"],
         alphabet=tuple(data["alphabet"]),
