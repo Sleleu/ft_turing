@@ -2,7 +2,7 @@
 
 from srcs.display import print_banner, print_machine_attributes
 from srcs.parsing import load_json, create_machine, create_tape, parse_arguments
-from srcs.actions import run_machine
+from srcs.actions import rec_process
 from types import MappingProxyType as mpt
 
 if __name__ == "__main__":
@@ -15,8 +15,6 @@ if __name__ == "__main__":
         tape = create_tape(input, machine)
         print_banner()
         print_machine_attributes(machine)
-        run_machine(machine, tape)
-    except (ValueError, KeyError, TypeError) as error:
+        rec_process(machine, tape, 0, machine.initial)
+    except (ValueError, KeyError, TypeError, RecursionError) as error:
         print(f"{__name__}: {type(error).__name__}: {error}")
-    except RecursionError as error:
-        print(f"The machine cannot find a solution")
