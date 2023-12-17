@@ -1,10 +1,21 @@
+from types import MappingProxyType as mpt
+from dataclasses import dataclass
+
+@dataclass(frozen=True)
 class TuringMachine:
-    def __init__(self, name: str, alphabet: tuple[str], blank: str, states: tuple[str],
-                 initial : str, finals : tuple[str], transitions: dict[str, tuple[dict[str, str]]]):
-        self.name = name
-        self.alphabet = alphabet
-        self.blank = blank
-        self.states = states
-        self.initial = initial
-        self.finals = finals
-        self.transitions = transitions
+    name: str
+    alphabet: tuple[str]
+    blank: str
+    states: tuple[str]
+    initial : str
+    finals : tuple[str]
+    transitions: mpt[str, tuple[mpt[str, str]]]
+    
+@dataclass(frozen=True)
+class Tape:
+    tape : mpt
+    tape_keys : tuple[int]
+    head : int
+    state : str
+    read_char : str
+    action: mpt[str, str]

@@ -25,3 +25,10 @@ def print_machine_attributes(machine: TuringMachine)-> None:
     print(f"Initial: '{machine.initial}'")
     print(f"Finals: {machine.finals}")
     print(f"{''.ljust(75, '*')}")
+
+def print_tape(tape, head):
+    def generate_keys():
+        minimum = min(tape) if min(tape) < head else head
+        maximum = max(tape) if max(tape) > head else head
+        return range(minimum, maximum + 1)
+    return "".join(map(lambda i: tape.get(i, '.') if i != head else '<' + tape.get(i, '.') + '>', generate_keys()))

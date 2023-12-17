@@ -1,6 +1,7 @@
 import json
 import argparse
 from srcs.classes import TuringMachine
+from types import MappingProxyType as mpt
 
 def load_json(path: str) -> json:
     """
@@ -97,7 +98,7 @@ def check_states(states: tuple, initial: str, finals: tuple)-> tuple:
 
     rec_check_finals_in_states(finals)
 
-def rec_check_t_lines(t:tuple[dict[str, str]], alphabet, states)-> None:
+def rec_check_t_lines(t:tuple[mpt[str, str]], alphabet, states)-> None:
     """
     Recursively check if each key is present, and if each value is present :
     - in 'states' for 'to_action' key
@@ -113,7 +114,7 @@ def rec_check_t_lines(t:tuple[dict[str, str]], alphabet, states)-> None:
         raise ValueError("'action' must be 'LEFT' or 'RIGHT'")
     rec_check_t_lines(t[1:], alphabet, states)
 
-def rec_check_transitions(state_keys: tuple, transitions, alphabet: tuple, states: tuple)-> dict:
+def rec_check_transitions(state_keys: tuple, transitions, alphabet: tuple, states: tuple)-> mpt:
     """
     Recursively checks all transitions for each state.
     - check if each key is in the 'states' list
@@ -130,7 +131,7 @@ def rec_check_transitions(state_keys: tuple, transitions, alphabet: tuple, state
     rec_check_t_lines(trans_tuple, alphabet, states)
     rec_check_transitions(state_keys[1:], transitions, alphabet, states)
 
-def check_transitions(transitions: dict[str, tuple[dict[str, str]]], alphabet: tuple, states: tuple):
+def check_transitions(transitions: mpt[str, tuple[mpt[str, str]]], alphabet: tuple, states: tuple):
     """
     Create a tuple of keys containing each transitions ("scanright", "eraseone", ...),
     to recursively iterate on them
@@ -161,7 +162,7 @@ def create_machine(data: json) -> TuringMachine:
         transitions=data["transitions"]
     )
 
-def create_tape(input: str, machine: TuringMachine) -> dict:
+def create_tape(input: str, machine: TuringMachine) -> mpt:
     """
     iter with map with the function check_input_char, return a dict
     """
@@ -175,4 +176,4 @@ def create_tape(input: str, machine: TuringMachine) -> dict:
         if char == machine.blank:
             raise ValueError(f"Character '{char}' is 'blank' and must not be in input")
         return (i, char)
-    return dict(map(check_input_char, range(len(input))))
+    return mpt(dict(map(check_input_char, range(len(input)))))
