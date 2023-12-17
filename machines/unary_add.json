@@ -1,0 +1,25 @@
+{
+    "name" : "unary_add",
+    "alphabet": [ "1", ".", "+" ],
+    "blank" : ".",
+    "states" : [ "Q0", "Q1", "Q2", "finish", "HALT" ],
+    "initial" : "Q0",
+    "finals" : [ "HALT" ],
+    
+    "transitions" : {
+        "Q0": [
+            { "read" : "1", "to_state": "Q0", "write": "1", "action": "RIGHT"},
+            { "read" : "+", "to_state": "Q1", "write": "1", "action": "RIGHT"}
+        ],
+        "Q1": [
+            { "read" : "1", "to_state": "Q1", "write": "1", "action": "RIGHT"},
+            { "read" : ".", "to_state": "Q2" , "write": ".", "action": "LEFT"}
+        ],
+        "Q2": [
+            { "read" : "1", "to_state": "finish", "write": ".", "action": "RIGHT"}
+        ],
+        "finish": [
+            { "read" : ".", "to_state": "HALT" , "write": ".", "action": "RIGHT"}
+        ]
+    }
+}
