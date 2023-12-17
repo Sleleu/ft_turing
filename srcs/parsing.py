@@ -3,6 +3,9 @@ import argparse
 from srcs.classes import TuringMachine
 
 def load_json(path: str) -> json:
+    """
+    Try to load data from a json
+    """
     HANDLED_ERRORS = (FileNotFoundError, PermissionError,
                       ValueError, IsADirectoryError)
     try:
@@ -14,6 +17,9 @@ def load_json(path: str) -> json:
         exit(1)
 
 def parse_arguments():
+    """
+    argparse function, check for jsonfile and input args
+    """
     parser = argparse.ArgumentParser()
     parser.usage = "ft_turing [-h] jsonfile input"
     parser.add_argument("jsonfile", help="json description of the machine")
@@ -24,6 +30,9 @@ def parse_arguments():
 
 
 def rec_is_duplicate(iterable: tuple)-> bool:
+    """
+    Pattern matching to check if there is a duplicate in an iterable
+    """
     match iterable :
         case []:
             return False
@@ -31,6 +40,9 @@ def rec_is_duplicate(iterable: tuple)-> bool:
             return hd in tl or rec_is_duplicate(tl)
 
 def rec_is_not_str(iterable)-> bool:
+    """
+    Pattern matching to check if all items in an iterable are string type
+    """
     match iterable :
         case []:
             return False
@@ -150,7 +162,13 @@ def create_machine(data: json) -> TuringMachine:
     )
 
 def create_tape(input: str, machine: TuringMachine) -> dict:
+    """
+    iter with map with the function check_input_char, return a dict
+    """
     def check_input_char(i):
+        """
+        return a pair of key/values
+        """
         char = input[i]
         if char not in machine.alphabet:
             raise ValueError(f"Character '{char}' must be in 'alphabet'")
