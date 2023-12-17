@@ -1,0 +1,47 @@
+{
+    "name" : "zero_n_one_n",
+    "alphabet": [ "1", "0", "y", "n", "-", "_", "." ],
+    "blank" : ".",
+    "states" : [ "check_forward", "return_begin", "Q0", "Q1", "Q2", "Q3", "finish", "HALT", "ERROR" ],
+    "initial" : "check_forward",
+    "finals" : [ "HALT", "ERROR" ],
+    
+    "transitions" : {
+        "check_forward": [
+            { "read" : "0", "to_state": "check_forward" , "write": "0", "action": "RIGHT"},
+            { "read" : "1", "to_state": "check_forward" , "write": "1", "action": "RIGHT"},
+            { "read" : "_", "to_state": "ERROR" , "write": ".", "action": "RIGHT"},
+            { "read" : "-", "to_state": "ERROR" , "write": ".", "action": "RIGHT"},
+            { "read" : "n", "to_state": "ERROR" , "write": ".", "action": "RIGHT"},
+            { "read" : "y", "to_state": "ERROR" , "write": ".", "action": "RIGHT"},
+            { "read" : ".", "to_state": "return_begin" , "write": ".", "action": "LEFT"}
+        ],
+        "return_begin": [
+            { "read" : "0", "to_state": "return_begin" , "write": "0", "action": "LEFT"},
+            { "read" : "1", "to_state": "return_begin" , "write": "1", "action": "LEFT"},
+            { "read" : ".", "to_state": "Q0" , "write": ".", "action": "RIGHT"}
+        ],
+        "Q0": [
+            { "read" : "0", "to_state": "Q1" , "write": "-", "action": "RIGHT"},
+            { "read" : "_", "to_state": "Q3" , "write": "_", "action": "RIGHT"}
+        ],
+        "Q1": [
+            { "read" : "0", "to_state": "Q1" , "write": "0", "action": "RIGHT"},
+            { "read" : "1", "to_state": "Q2" , "write": "_", "action": "LEFT"},
+            { "read" : "_", "to_state": "Q1" , "write": "_", "action": "RIGHT"}
+        ],
+        "Q2": [
+            { "read" : "0", "to_state": "Q2" , "write": "0", "action": "LEFT"},
+            { "read" : "-", "to_state": "Q0" , "write": "-", "action": "RIGHT"},
+            { "read" : "_", "to_state": "Q2" , "write": "_", "action": "LEFT"}    
+        ],
+        "Q3": [
+            { "read" : "_", "to_state": "Q3" , "write": "_", "action": "RIGHT"},
+            { "read" : ".", "to_state": "finish" , "write": "y", "action": "RIGHT"},
+            { "read" : "1", "to_state": "finish" , "write": "n", "action": "RIGHT"}  
+        ],
+        "finish": [
+            { "read" : ".", "to_state": "HALT", "write": ".", "action": "RIGHT"}
+        ]
+    }
+}
