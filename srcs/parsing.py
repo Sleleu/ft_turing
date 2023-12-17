@@ -11,14 +11,14 @@ def load_json(path: str) -> json:
         return data
     except HANDLED_ERRORS as error:
         print(f"{__name__}: {type(error).__name__}: {error}")
-        return None
+        exit(1)
 
 def parse_arguments():
     parser = argparse.ArgumentParser()
     parser.usage = "ft_turing [-h] jsonfile input"
     parser.add_argument("jsonfile", help="json description of the machine")
     parser.add_argument("input", help="input of the machine")
-    if len(parser.parse_args().input) >= 0:
+    if len(parser.parse_args().input) <= 0:
         raise ValueError("Input can't be empty")
     return (parser.parse_args())
 
