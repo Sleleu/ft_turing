@@ -33,7 +33,7 @@ def parse_arguments():
 
 if __name__ == "__main__":
     HANDLED_ERRORS = (FileNotFoundError, PermissionError, ValueError, IsADirectoryError, 
-                      KeyError, TypeError, AttributeError, RecursionError)
+                      KeyError, TypeError, AttributeError, RecursionError, KeyboardInterrupt)
     try:
         parse_arguments()
         data = mpt(load_json(sys.argv[1]))

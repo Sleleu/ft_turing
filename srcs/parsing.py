@@ -33,6 +33,8 @@ def check_alphabet(alphabet: tuple, blank: str)-> tuple:
 
 def check_states(states: tuple, initial: str, finals: tuple)-> tuple:
     """ Checks if states are valid, including the initial state and final states. """
+    if not finals:
+        raise ValueError("Finals cannot be empty")
     if rec_is_not_str(states) or rec_is_not_str(finals):
         raise TypeError("Values need to be a string type")
     if rec_is_duplicate(states) or rec_is_duplicate(finals):

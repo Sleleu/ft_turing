@@ -1,0 +1,54 @@
+{
+    "name" : "palindrome",
+    "alphabet": [ "1", "0", ".", "y", "n"],
+    "blank" : ".",
+    "states" : [ "Q0", "Q1", "Q2", "Q3", "Q4", "Q5", "Q6", "Q7", "finish", "HALT" ],
+    "initial" : "Q0",
+    "finals" : [ "HALT" ],
+    
+    "transitions" : {
+        "Q0": [
+            { "read" : "1", "to_state": "Q1", "write": ".", "action": "RIGHT"},
+            { "read" : "0", "to_state": "Q4", "write": ".", "action": "RIGHT"},
+			{ "read" : ".", "to_state": "Q7", "write": ".", "action": "RIGHT"}
+        ],
+		"Q1": [
+            { "read" : "1", "to_state": "Q1", "write": "1", "action": "RIGHT"},
+            { "read" : "0", "to_state": "Q1", "write": "0", "action": "RIGHT"},
+			{ "read" : ".", "to_state": "Q2", "write": ".", "action": "LEFT"}
+        ],
+        "Q2": [
+            { "read": "0", "to_state": "finish", "write": "n", "action": "RIGHT"},
+            { "read" : "1", "to_state": "Q3", "write": ".", "action": "LEFT"},
+            { "read" : ".", "to_state": "finish", "write": "y", "action": "RIGHT"}
+        ],
+		"Q3": [
+            { "read" : "1", "to_state": "Q3", "write": "1", "action": "LEFT"},
+			{ "read" : "0", "to_state": "Q3", "write": "0", "action": "LEFT"},
+            { "read" : ".", "to_state": "Q0", "write": ".", "action": "RIGHT"}
+        ],
+		"Q4": [
+			{ "read" : "1", "to_state": "Q4", "write": "1", "action": "RIGHT"},
+			{ "read" : "0", "to_state": "Q4", "write": "0", "action": "RIGHT"},
+			{ "read" : ".", "to_state": "Q5", "write": ".", "action": "LEFT"}
+		],
+		"Q5": [
+            { "read": "1", "to_state": "finish", "write": "n", "action": "RIGHT"},
+            { "read" : "0", "to_state": "Q6", "write": ".", "action": "LEFT"},
+            { "read" : ".", "to_state": "finish", "write": "y", "action": "RIGHT"}
+			],
+		"Q6": [
+            { "read" : "1", "to_state": "Q6", "write": "1", "action": "LEFT"},
+			{ "read" : "0", "to_state": "Q6", "write": "0", "action": "LEFT"},
+			{ "read" : ".", "to_state": "Q0", "write": ".", "action": "RIGHT"}
+        ],
+		"Q7": [
+            { "read" : "1", "to_state": "finish", "write": "n", "action": "RIGHT"},
+			{ "read" : "0", "to_state": "finish", "write": "n", "action": "RIGHT"},
+			{ "read" : ".", "to_state": "finish", "write": "y", "action": "RIGHT"}
+        ],
+        "finish": [
+            { "read" : ".", "to_state": "HALT", "write": ".", "action": "RIGHT"}
+        ]
+    }
+}
